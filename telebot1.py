@@ -1,21 +1,36 @@
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, types
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types.web_app_info import WebAppInfo
+import config
 
-import asyncio
-import configg
 
-
-bot = Bot(configg.TOKEN)
+bot = Bot(config.BOT_TOKEN)
 dp = Dispatcher(bot)
 
-async def main():
-    from handlers import dp
-    try:
-        await dp.start_polling()
-    finally:
-        await bot.session.close()
+@dp.message_handler(commands=['start'])
+async def start(message: types.Message):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(KeyboardButton("Open Website", web_app=WebAppInfo (url='https://Travelniy.github.io/')))
+    
+    
+    markup.row(KeyboardButton("Manzil"), KeyboardButton("Option 2"))
+    
+  
+    await message.answer("Hello, my friend!", reply_markup=markup)
 
-if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except (KeyboardInterrupt, SystemExit):
-        print('Bot stopped!')
+@dp.message_handler(lambda message: message.text == "Option 2")
+async def handle_option_2(message: types.Message):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    
+@dp.message_handler(lambda message: message.text == "Manzil")
+async def handle_option_1(message: types.Message):
+    # Send the store location
+    await bot.send_location(message.chat.id, latitude=40.991672, longitude=71.667344)
+
+
+
+
+if __name__ == '__main__':
+    from aiogram import executor
+    executor.start_polling(dp)
